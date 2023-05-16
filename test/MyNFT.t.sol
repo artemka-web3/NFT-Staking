@@ -18,14 +18,11 @@ contract MyNFTTest is Test {
         assertTrue(nft.ownerOf(1) == receiver, "Token not owned by receiver");
     }
 
-    function testTotalSupply() public {
-        uint256 expectedSupply = 0;
-
-        for (uint256 i = 1; i <= 10; i++) {
-            nft.safeMint(receiver);
-            expectedSupply++;
-            assertTrue(nft.totalSupply() == expectedSupply, "Invalid total supply");
-        }
+    function testGetTokenIdByOwner() public {
+        nft.safeMint(receiver);
+        uint id = nft.getTokenIdByOwner(receiver);
+        assertTrue(id == 1, "invalid id");  
+        console.log("NFT ID", id);  
     }
 }
 

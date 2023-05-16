@@ -1592,8 +1592,8 @@
       }
     },
     "src/MyNFT.sol": {
-      "lastModificationDate": 1680889059423,
-      "contentHash": "4d78522940b242f06ba50f1dc548a0db",
+      "lastModificationDate": 1684279408730,
+      "contentHash": "cd6aa89aead7ba10747b40cbc6e4be54",
       "sourceName": "src/MyNFT.sol",
       "solcConfig": {
         "settings": {
@@ -1646,8 +1646,8 @@
       }
     },
     "src/MyToken.sol": {
-      "lastModificationDate": 1680888099678,
-      "contentHash": "54baabe854cd808c631759f5ec598db3",
+      "lastModificationDate": 1684277555509,
+      "contentHash": "85dbf04756f91c982673168c57c027dc",
       "sourceName": "src/MyToken.sol",
       "solcConfig": {
         "settings": {
@@ -1696,8 +1696,8 @@
       }
     },
     "test/MyNFT.t.sol": {
-      "lastModificationDate": 1680874558371,
-      "contentHash": "e55669101ae3ef7c6daf431d509b01c3",
+      "lastModificationDate": 1684253358087,
+      "contentHash": "481f24fbc326069a6a6ea35cad006c41",
       "sourceName": "test/MyNFT.t.sol",
       "solcConfig": {
         "settings": {

@@ -9,18 +9,22 @@ contract MyNFT is ERC721, Ownable {
     uint256 public totalSupply;
     constructor() ERC721("MyNFT", "MNFT") {}
 
-    function safeMint(address to) public {
+    function safeMint(address to) public returns(uint256) {
         totalSupply++;
-        require(balanceOf(msg.sender) <= 1, "You already have an NFT");
+        require(balanceOf(to) <= 1, "You already have an NFT");
         _safeMint(to, totalSupply);
+        return totalSupply; //returns minted tokenId
     }
 
-    function getTokenIdByOwner(address user) public view returns(uint i){
-        for(i=1; i<totalSupply; i++){
+    function getTokenIdByOwner(address user) public view returns(uint){
+        for(uint i=0; i<totalSupply; i++){
             if(ownerOf(i) == user){
                 return i;
+            } else {
             }
         }
+        return 0;
+
     }
 
 
