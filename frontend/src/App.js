@@ -10,7 +10,7 @@ const MyToken_ABI = require('./abis/MyToken.json').abi;
 function App() {
   const [connected, setConnected] = useState(false);
   const [account, setAccount] = useState("");
-  const [userTokenId, setUserTokenId] = useState("");
+  const [userTokenId, setUserTokenId] = useState(0);
   const [reward, setReward] = useState(0);
   const [IsStaked, setIsStaked] = useState(false);
 
@@ -67,9 +67,9 @@ function App() {
   const stake = async () => {
     const provider = new providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    if(userTokenId != "0"){
-      const tokenId = await nft_contract.getTokenIdByOwner(signer.getAddress());
-      const tx = await token_contract.stake(tokenId.toNumber());
+    if(userTokenId != 0){
+      const id = await nft_contract.getTokenIdByOwner(signer.getAddress());
+      const tx = await token_contract.stake(parseInt(id.toString()));
       await tx.wait();
       setIsStaked(true);
     }
@@ -79,24 +79,25 @@ function App() {
     const provider = new providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     if(userTokenId != "0"){
-      const tokenId = await nft_contract.getTokenIdByOwner(signer.getAddress());
-      const tx = await token_contract.unstake(tokenId.toNumber());
+      const id = await nft_contract.getTokenIdByOwner(signer.getAddress());
+
+      const tx = await token_contract.unstake(parseInt(id.toString()));
       await tx.wait();
       setIsStaked(false);
     }
 
   }
 
-  const rewardAmount = async () => {
-    const provider = new providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    if(userTokenId != "0"){
-      const tokenId = await nft_contract.getTokenIdByOwner(signer.getAddress());
-      let tokenIdString = tokenId.toString()
-      const rewardAm = await token_contract.calculateTokens(parseInt(tokenIdString)-1);
-      setReward(rewardAm.toString());
-    }
-  }
+  // const rewardAmount = async () => {
+  //   const provider = new providers.Web3Provider(window.ethereum);
+  //   const signer = provider.getSigner();
+  //   if(userTokenId != 0){
+  //     const tokenId = await nft_contract.getTokenIdByOwner(signer.getAddress());
+  //     let tokenIdString = tokenId.toString()
+  //     const rewardAm = await token_contract.calculateTokens(parseInt(tokenIdString));
+  //     setReward(rewardAm.toString());
+  //   }
+  // }
 
   useEffect(()=>{
     connectWallet();
@@ -108,8 +109,8 @@ function App() {
       <div className="App d-flex align-items-center justify-content-center text-center vh-100">
         <div className="d-grid gap-2 col-6 mx-auto">
           <h1 className="">Reward: {reward}</h1>
-          <h2 className="">{userTokenId == "0" ?  "You don't have NFT. Mint one!" : `Your tokenID is ${userTokenId}`}</h2>
-          <button onClick={mint} className="btn btn-primary" disabled={userTokenId == "0" ? false : true} type="button">Mint</button>
+          <h2 className="">{userTokenId == 0 ?  "You don't have NFT. Mint one!" : `Your tokenID is ${userTokenId}`}</h2>
+          <button onClick={mint} className="btn btn-primary" disabled={userTokenId == 0 ? false : true} type="button">Mint</button>
           <button onClick={stake} className="btn btn-success" disabled={IsStaked == false && userTokenId != "0" ? false : true} type="button">Stake</button>
           <button onClick={unstake} className="btn btn-danger" disabled={IsStaked == true && userTokenId != "0" ? false : true} type="button">Unstake</button>
         </div>
