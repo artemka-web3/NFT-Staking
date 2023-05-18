@@ -9,6 +9,8 @@ import "../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 contract MyToken is ERC20, ERC721Holder, Ownable {
     IERC721 public nft;
     mapping(uint256 => address) public tokenOwnerOf;
+    mapping(address => uint256) public idStakedByUser;
+
     mapping(uint256 => uint256) public tokenStakedAt;
     uint256 public EMISSION_RATE = (50 * 10 ** decimals()) / 1 days;
     mapping (uint256 => bool) public isStaked;
@@ -22,6 +24,7 @@ contract MyToken is ERC20, ERC721Holder, Ownable {
         nft.safeTransferFrom(msg.sender, address(this), tokenId);
         tokenOwnerOf[tokenId] = msg.sender;
         tokenStakedAt[tokenId] = block.timestamp;
+        idStakedByUser[msg.sender] = tokenId;
         isStaked[tokenId] = true;
     }
 
@@ -31,6 +34,9 @@ contract MyToken is ERC20, ERC721Holder, Ownable {
         // переделать в view функцию
     }
 
+    function getIdStakedByUser(address user) public view returns(uint256){
+        return idStakedByUser[user];
+    }
     function unstake(uint256 tokenId) external {
         require(tokenOwnerOf[tokenId] == msg.sender, "You can't unstake");
         _mint(msg.sender, calculateTokens(tokenId)); // Minting the tokens for staking

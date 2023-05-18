@@ -16,8 +16,8 @@ function App() {
 
 
 
-  const MyNFT_ADDRESS = "0xa733776d506a6bc437aec17c809e165e29ca6c75";
-  const MyToken_ADDRESS = "0x862ef6ef6c3cf1a7c0cd978f10c5135cbe75bb73";
+  const MyNFT_ADDRESS = "0x0c6AC6Dab04ce939cFA40695CBA5E33D59426aBf";
+  const MyToken_ADDRESS = "0xcec36975693B1028Ee6A25c277bD98c5Ad4eD713";
   let nft_contract;
   let token_contract;
 
@@ -34,13 +34,22 @@ function App() {
         setConnected(true);
         console.log(account);
         console.log(connected);
+        
         const id = await nft_contract.getTokenIdByOwner(signer.getAddress());
-        console.log('users token id:', parseInt(id.toString()));
-        setUserTokenId(parseInt(id.toString()))
-        if(parseInt(id.toString()) != 0) {
-          const rewardAm = await token_contract.calculateTokens(parseInt(id.toString()));
-          setReward(rewardAm.toString());
-        }
+        const stakedId = await token_contract.getIdStakedByUser(signer.getAddress());
+        const isStakedHZ = await token_contract.isStaked(parseInt(stakedId.toString()));
+        if(parseInt(id.toString()) != 0 && isStakedHZ == false){
+          console.log('users token id:', parseInt(id.toString()));
+          setUserTokenId(parseInt(id.toString()))
+          setIsStaked(false);
+        } else if(isStakedHZ == true){
+            const stakedId = await token_contract.getIdStakedByUser(signer.getAddress());
+            setUserTokenId(parseInt(stakedId.toString()))
+            const rewardAm = await token_contract.calculateTokens(parseInt(stakedId.toString()));
+            setReward(rewardAm.toString());
+            setIsStaked(true);
+
+          }
         
       } else {
         console.error("No web3 provider found");
@@ -67,23 +76,46 @@ function App() {
   const stake = async () => {
     const provider = new providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    if(userTokenId != 0){
-      const id = await nft_contract.getTokenIdByOwner(signer.getAddress());
-      const tx = await token_contract.stake(parseInt(id.toString()));
-      await tx.wait();
-      setIsStaked(true);
+    const id = await nft_contract.getTokenIdByOwner(signer.getAddress());
+
+    if(parseInt(id.toString()) != 0){
+      const isApproved = await nft_contract.isApprovedForAll(signer.getAddress(), token_contract.address);
+      if(parseInt(id.toString()) != 0 && isApproved == false){
+        const appr_tx = await nft_contract.setApprovalForAll(token_contract.address, true);
+        await appr_tx.wait();
+      }
+      try{
+        const tx = await token_contract.stake(parseInt(id.toString()));
+        await tx.wait();
+      } catch(err){
+        alert(err);
+        console.log(err);
+      }
+
     }
   }
 
   const unstake = async () => {
     const provider = new providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    if(userTokenId != "0"){
-      const id = await nft_contract.getTokenIdByOwner(signer.getAddress());
+    const id = await nft_contract.getTokenIdByOwner(signer.getAddress());
+    const stakedId = await token_contract.getIdStakedByUser(signer.getAddress());
 
-      const tx = await token_contract.unstake(parseInt(id.toString()));
-      await tx.wait();
-      setIsStaked(false);
+    try{
+      if(parseInt(id.toString()) != 0){
+        const id = await nft_contract.getTokenIdByOwner(signer.getAddress());
+        console.log("ID", parseInt(id.toString()))
+        const tx = await token_contract.unstake(parseInt(id.toString()));
+        await tx.wait();
+      } else if(parseInt(stakedId.toString()) != 0){
+          const stakedId = await token_contract.getIdStakedByUser(signer.getAddress());
+          console.log("StakedID", parseInt(stakedId.toString()))
+          const tx = await token_contract.unstake(parseInt(stakedId.toString()));
+          await tx.wait();
+      }
+    } catch(err){
+      alert(err);
+      console.log(err);
     }
 
   }

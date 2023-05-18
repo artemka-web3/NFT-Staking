@@ -10,18 +10,23 @@ contract MyNFTTest is Test {
 
     function setUp() public {
         nft = new MyNFT();
-        receiver = address(new ERC721ReceiverMock());
     }
 
     function testSafeMint() public {
+        receiver = address(new ERC721ReceiverMock());
+        vm.startPrank(receiver);
         nft.safeMint(receiver);
         assertTrue(nft.ownerOf(1) == receiver, "Token not owned by receiver");
     }
 
     function testGetTokenIdByOwner() public {
+        receiver = address(new ERC721ReceiverMock());
+        vm.startPrank(receiver);
         nft.safeMint(receiver);
         uint id = nft.getTokenIdByOwner(receiver);
         assertTrue(id == 1, "invalid id");  
+        console.log(receiver);  
+
         console.log("NFT ID", id);  
     }
 }
